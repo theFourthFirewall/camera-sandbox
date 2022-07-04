@@ -80,6 +80,12 @@ namespace StarterAssets
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
         private CinemachineVirtualCamera _virtualCamera;
+        [SerializeField] float _cameraSmoothingX = 0.0009f;
+        [SerializeField] float _cameraSmoothingY = .0016f;
+        [SerializeField] float _minXFrame = .1f;
+        [SerializeField] float _maxXFrame = .9f;
+        [SerializeField] float _minYFrame = .75f;
+        [SerializeField] float _maxYFrame = .25f;
 
         // player
         private float _speed;
@@ -221,28 +227,98 @@ namespace StarterAssets
         
         private void CameraMigration()
         {
-            //Debug.Log("PlayerDirection: " + _playerTransform.transform.forward);
+            // Initialize current camera values
+            float oldX;
+            float oldY;
+            float newX;
+            float newY;
+            oldX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX;
+            oldY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY;
+
+            // Determine the new X position
             if (_playerTransform.transform.forward.x > 0)
-            {
-                Debug.Log("Shift Camera Right");
-                _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = .1f;
-            }
+                {
+                    newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _minXFrame;
+
+                    // newX = (_playerTransform.transform.forward.x/-2) + .5f;
+                    // if (newX < _minXFrame)
+                    // {
+                    //     newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _minXFrame;
+                    // }                    
+                }
             else
+                {        
+                    newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _maxXFrame;
+
+                    // newX = (_playerTransform.transform.forward.x/-2) + .5f;
+                    // if (newX > _maxXFrame)
+                    // {
+                    //     newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _maxXFrame;
+                    // }   
+
+                }
+
+            // newX = (_playerTransform.transform.forward.x/-2) + .5f;
+            // if (newX < _minXFrame)
+            // {
+            //     newX = _minXFrame;
+            // }
+            // else if (newX > _maxXFrame)
+            // {
+            //     newX = _maxXFrame;
+            // }
+            
+            // If different than previous, create an interpolation set to the new X position
+            if (oldX != newX)
             {
-                Debug.Log("Shift Camera Left");                
-                _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = .9f;
+                float lerpResult = Mathf.Lerp(oldX, newX, Time.time * _cameraSmoothingX);
+                _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = lerpResult;
             }
+
+            // Determine the new Y position
             if (_playerTransform.transform.forward.z > 0)
-            {
-                Debug.Log("Shift Camera Up");
-                
-                _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = .75f;
-            }
+                // if (_playerTransform.transform.forward.z > 0.5f)
+                // {                
+                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _minYFrame;
+                // }
+                // else
+                // {
+                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = .5f;
+                // }
+                {
+                    newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _minYFrame;
+                }
             else
+                // if (_playerTransform.transform.forward.z < 0.5f)
+                // {
+                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _maxYFrame;
+                // }
+                // else
+                // {
+                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = .5f;
+                // }
+                {
+                    newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _maxYFrame;
+                }
+
+            // newY = (_playerTransform.transform.forward.y/-2) + .5f;
+            // if (newY < _minYFrame)
+            // {
+            //     newY = _minYFrame;
+            // }
+            // else if (newY > _maxYFrame)
+            // {
+            //     newY = _maxYFrame;
+            // }
+
+            // If different than previous, create an interpolation set to the Y position
+            if (oldY != newY)
             {
-                Debug.Log("Shift Camera Down");
-                _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = .25f;
+                float lerpResult = Mathf.Lerp(oldY, newY, Time.time * _cameraSmoothingY);
+                _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = lerpResult;
+                Debug.Log("X: " + oldX + "Y: " + oldY);
             }
+
         }
 
         private void Move()
