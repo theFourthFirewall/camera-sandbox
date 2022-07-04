@@ -13,7 +13,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class IsoCamQuadrantController : MonoBehaviour
+    public class IsoCamController : MonoBehaviour
     {
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
@@ -80,8 +80,7 @@ namespace StarterAssets
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
         private CinemachineVirtualCamera _virtualCamera;
-        [SerializeField] float _cameraSmoothingX = 0.0009f;
-        [SerializeField] float _cameraSmoothingY = .0016f;
+        [SerializeField] float _cameraSmoothing = 1f;
         [SerializeField] float _minXFrame = .1f;
         [SerializeField] float _maxXFrame = .9f;
         [SerializeField] float _minYFrame = .75f;
@@ -238,85 +237,35 @@ namespace StarterAssets
             // Determine the new X position
             if (_playerTransform.transform.forward.x > 0)
                 {
-                    newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _minXFrame;
-
-                    // newX = (_playerTransform.transform.forward.x/-2) + .5f;
-                    // if (newX < _minXFrame)
-                    // {
-                    //     newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _minXFrame;
-                    // }                    
+                    newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _minXFrame;                 
                 }
             else
                 {        
                     newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _maxXFrame;
-
-                    // newX = (_playerTransform.transform.forward.x/-2) + .5f;
-                    // if (newX > _maxXFrame)
-                    // {
-                    //     newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _maxXFrame;
-                    // }   
-
                 }
-
-            // newX = (_playerTransform.transform.forward.x/-2) + .5f;
-            // if (newX < _minXFrame)
-            // {
-            //     newX = _minXFrame;
-            // }
-            // else if (newX > _maxXFrame)
-            // {
-            //     newX = _maxXFrame;
-            // }
             
             // If different than previous, create an interpolation set to the new X position
             if (oldX != newX)
             {
-                float lerpResult = Mathf.Lerp(oldX, newX, Time.time * _cameraSmoothingX);
+                float lerpResult = Mathf.Lerp(oldX, newX, Time.deltaTime * _cameraSmoothing);
                 _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = lerpResult;
             }
 
             // Determine the new Y position
             if (_playerTransform.transform.forward.z > 0)
-                // if (_playerTransform.transform.forward.z > 0.5f)
-                // {                
-                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _minYFrame;
-                // }
-                // else
-                // {
-                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = .5f;
-                // }
                 {
                     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _minYFrame;
                 }
             else
-                // if (_playerTransform.transform.forward.z < 0.5f)
-                // {
-                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _maxYFrame;
-                // }
-                // else
-                // {
-                //     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = .5f;
-                // }
                 {
                     newY = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = _maxYFrame;
                 }
 
-            // newY = (_playerTransform.transform.forward.y/-2) + .5f;
-            // if (newY < _minYFrame)
-            // {
-            //     newY = _minYFrame;
-            // }
-            // else if (newY > _maxYFrame)
-            // {
-            //     newY = _maxYFrame;
-            // }
-
             // If different than previous, create an interpolation set to the Y position
             if (oldY != newY)
             {
-                float lerpResult = Mathf.Lerp(oldY, newY, Time.time * _cameraSmoothingY);
+                float lerpResult = Mathf.Lerp(oldY, newY, Time.deltaTime * _cameraSmoothing);
                 _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenY = lerpResult;
-                Debug.Log("X: " + oldX + "Y: " + oldY);
             }
 
         }
