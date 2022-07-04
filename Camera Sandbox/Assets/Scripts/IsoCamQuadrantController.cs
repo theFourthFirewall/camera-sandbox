@@ -13,7 +13,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class IsoCamController : MonoBehaviour
+    public class IsoCamQuadrantController : MonoBehaviour
     {
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
