@@ -12,6 +12,8 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+		public bool rotateCameraRight;
+		public bool rotateCameraLeft;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -43,13 +45,21 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+		public void OnRotateCameraRight(InputValue value)
+		{
+			RotateCameraRightInput(value.isPressed);
+		}
+		public void OnRotateCameraLeft(InputValue value)
+		{
+			RotateCameraLeftInput(value.isPressed);
+		}
 #endif
 
 
 		public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
-		} 
+		}
 
 		public void LookInput(Vector2 newLookDirection)
 		{
@@ -65,6 +75,14 @@ namespace StarterAssets
 		{
 			sprint = newSprintState;
 		}
+		public void RotateCameraRightInput(bool newRotateCameraRightState)
+		{
+			rotateCameraRight = newRotateCameraRightState;
+		}
+		public void RotateCameraLeftInput(bool newRotateCameraLeftState)
+		{
+			rotateCameraLeft = newRotateCameraLeftState;
+		}
 
 		private void OnApplicationFocus(bool hasFocus)
 		{
@@ -76,5 +94,5 @@ namespace StarterAssets
 			Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 		}
 	}
-	
+
 }

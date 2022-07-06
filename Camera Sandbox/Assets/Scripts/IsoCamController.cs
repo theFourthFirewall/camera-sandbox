@@ -146,7 +146,7 @@ namespace StarterAssets
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
@@ -222,8 +222,29 @@ namespace StarterAssets
             // Cinemachine will follow this target
             CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
                 _cinemachineTargetYaw, 0.0f);
+
+            // Shoulder buttons rotate the camera by 90 degrees in either direction
+            // Should be coroutines
+            if (_input.rotateCameraRight)
+            {
+                Debug.Log("Rotate Right");
+                float currentCameraRotation = _playerTransform.rotation.y;
+                float lerpRotation = Mathf.LerpAngle(currentCameraRotation, currentCameraRotation - 90, Time.deltaTime);
+                _followCamera.GetComponent<Transform>().Rotate(0f, lerpRotation, 0f, Space.World);
+                // Depress button
+                _input.rotateCameraRight = false;
+            }
+            if (_input.rotateCameraLeft)
+            {
+                Debug.Log("Rotate Left");
+                float currentCameraRotation = _playerTransform.rotation.y;
+                float lerpRotation = Mathf.LerpAngle(currentCameraRotation, currentCameraRotation + 90, Time.deltaTime);
+                _followCamera.GetComponent<Transform>().Rotate(0f, lerpRotation, 0f, Space.World);
+                // Depress button
+                _input.rotateCameraLeft = false;
+            }
         }
-        
+
         private void CameraMigration()
         {
             // Initialize current camera values
@@ -237,13 +258,13 @@ namespace StarterAssets
             // Determine the new X position
             if (_playerTransform.transform.forward.x > 0)
                 {
-                    newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _minXFrame;                 
+                    newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _minXFrame;
                 }
             else
-                {        
+                {
                     newX = _virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>().m_ScreenX = _maxXFrame;
                 }
-            
+
             // If different than previous, create an interpolation set to the new X position
             if (oldX != newX)
             {
@@ -326,7 +347,7 @@ namespace StarterAssets
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
             // Debug.Log("Target Direction: " + targetDirection);
-            // Debug.Log("Vector3.forward: " + Vector3.forward);            
+            // Debug.Log("Vector3.forward: " + Vector3.forward);
             // Debug.Log("transform.rotation: " + GetComponent<Transform>().transform.rotation);
             //Debug.Log("transform.forward: " + GetComponent<Transform>().transform.forward);
 
