@@ -2,6 +2,7 @@
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
 using Cinemachine;
+using System.Collections;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -79,7 +80,14 @@ namespace StarterAssets
         // cinemachine
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
-
+        private bool _cameraRotating = false;
+        [SerializeField] float _cameraSmoothing = 1f;
+        [SerializeField] float _cameraRotationSpeed = 2f;
+        [SerializeField] float _minXFrame = .1f;
+        [SerializeField] float _maxXFrame = .9f;
+        [SerializeField] float _minYFrame = .75f;
+        [SerializeField] float _maxYFrame = .25f;
+        Quaternion isometricOffset;
 
         // player
         private float _speed;
@@ -88,6 +96,7 @@ namespace StarterAssets
         private float _rotationVelocity;
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
+        private Transform _playerTransform;
 
         // timeout deltatime
         private float _jumpTimeoutDelta;
@@ -111,6 +120,9 @@ namespace StarterAssets
         private ICinemachineCamera _vcamOverTheShoulder;
         private ICinemachineCamera _vcamLowAngle;
         private ICinemachineCamera _vcamIsometric;
+        private ICinemachineCamera _vcamMigratingIsometric;
+        private CinemachineFramingTransposer _vcamMigratingIsometricFrame;
+        private GameObject _isoRotation;
 
         private const float _threshold = 0.01f;
 
@@ -136,6 +148,8 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 
+                _isoRotation = GameObject.FindGameObjectWithTag("IsometricRotation");
+
                 _virtualCameras = GameObject.FindGameObjectsWithTag("Vcam");
                 foreach (GameObject Vcam in _virtualCameras)
                 {
@@ -156,6 +170,12 @@ namespace StarterAssets
                             _vcamIsometric = Vcam.GetComponent<ICinemachineCamera>();
                             break;
                         }
+                        case "MigratingIsometric":
+                        {
+                            _vcamMigratingIsometric = Vcam.GetComponent<ICinemachineCamera>();
+                            _vcamMigratingIsometricFrame = Vcam.GetComponent<CinemachineVirtualCamera>().GetCinemachineComponent<CinemachineFramingTransposer>();
+                            break;
+                        }
                     }
                 }
             }
@@ -168,6 +188,7 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
+            _playerTransform = GetComponent<Transform>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -193,6 +214,7 @@ namespace StarterAssets
         private void LateUpdate()
         {
             CameraRotation();
+            CameraMigration();
             CameraSelection();
         }
 
@@ -251,6 +273,120 @@ namespace StarterAssets
                 CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
                     _cinemachineTargetYaw, 0.0f);
             }
+            // otherwise, if in orthographic mode
+            else
+            {
+                if (_input.rotateCameraRight && !_cameraRotating)
+                {
+                    _cameraRotating = true;
+                    _input.rotateCameraRight = false;
+                    StartCoroutine(CameraQuarterRotation(90f));
+                }
+                if (_input.rotateCameraLeft && !_cameraRotating)
+                {
+                    _cameraRotating = true;
+                    _input.rotateCameraLeft = false;
+                    StartCoroutine(CameraQuarterRotation(-90f));
+                }
+            }
+        }
+
+        IEnumerator CameraQuarterRotation(float rotation)
+        {
+            float count = 0;
+            if (rotation > 0)
+            {
+                while (count < rotation)
+                {
+                    _isoRotation.GetComponent<Transform>().Rotate(0f, _cameraRotationSpeed, 0f, Space.World);
+                    count += _cameraRotationSpeed;
+                    yield return null;
+                }
+            }
+            else
+            {
+                while (count > rotation)
+                {
+                    _isoRotation.GetComponent<Transform>().Rotate(0f, -_cameraRotationSpeed, 0f, Space.World);
+                    count -= _cameraRotationSpeed;
+                    yield return null;
+                }
+            }
+            _cameraRotating = false;
+        }
+
+        private void CameraMigration()
+        {
+            // Initialize current camera values
+            float oldX;
+            float oldY;
+            float newX;
+            float newY;
+            oldX = _vcamMigratingIsometricFrame.m_ScreenX;
+            oldY = _vcamMigratingIsometricFrame.m_ScreenY;
+            Debug.Log("player x: " + _playerTransform.transform.forward.x);
+            Debug.Log("IsoRotation x: " + _isoRotation.transform.forward.x);
+            Debug.Log("IsoRotation Y: " + (int)_isoRotation.transform.eulerAngles.y);
+            switch ((int)_isoRotation.transform.eulerAngles.y)
+            {
+                case 0:
+                {
+                    isometricOffset = Quaternion.AngleAxis(-45, Vector3.up);
+                    break;
+                }
+                case 90:
+                {
+                    isometricOffset = Quaternion.AngleAxis(-135, Vector3.up);
+                    break;
+                }
+                case 180 or -180:
+                {
+                    isometricOffset = Quaternion.AngleAxis(-225, Vector3.up);
+                    break;
+                }
+                case 270 or -90:
+                {
+                    isometricOffset = Quaternion.AngleAxis(-315, Vector3.up);
+                    break;
+                }
+            }
+            Vector3 isometricForward = isometricOffset * _playerTransform.forward;
+            Debug.Log("Calculated Forward: " + isometricForward);
+
+            // Determine the new X position
+            if (isometricForward.x > 0)
+                {
+                    newX = _minXFrame;
+                }
+            else
+                {
+                    newX = _maxXFrame;
+                }
+
+            // If different than previous, create an interpolation set to the new X position
+            if (oldX != newX)
+            {
+                float lerpResult = Mathf.Lerp(oldX, newX, Time.deltaTime * _cameraSmoothing);
+                _vcamMigratingIsometricFrame.m_ScreenX = lerpResult;
+            }
+
+            // Determine the new Y position
+            if (isometricForward.z > 0)
+                {
+                    newY = _minYFrame;
+                }
+            else
+                {
+                    newY = _maxYFrame;
+                }
+
+            // If different than previous, create an interpolation set to the Y position
+            if (oldY != newY)
+            {
+                float lerpResult = Mathf.Lerp(oldY, newY, Time.deltaTime * _cameraSmoothing);
+                _vcamMigratingIsometricFrame.m_ScreenY = lerpResult;
+            }
+
         }
 
         private void CameraSelection()
@@ -262,6 +398,7 @@ namespace StarterAssets
                 _vcamOverTheShoulder.Priority = 1;
                 _vcamLowAngle.Priority = 0;
                 _vcamIsometric.Priority = 0;
+                _vcamMigratingIsometric.Priority = 0;
                 _input.vcam1 = false;
             }
             else if (_input.vcam2)
@@ -271,11 +408,17 @@ namespace StarterAssets
                 _vcamOverTheShoulder.Priority = 0;
                 _vcamLowAngle.Priority = 0;
                 _vcamIsometric.Priority = 1;
+                _vcamMigratingIsometric.Priority = 0;
                 _input.vcam2 = false;
             }
             else if (_input.vcam3)
             {
                 Debug.Log("Vcam3 Selected");
+                Camera.main.orthographic = true;
+                _vcamOverTheShoulder.Priority = 0;
+                _vcamLowAngle.Priority = 0;
+                _vcamIsometric.Priority = 0;
+                _vcamMigratingIsometric.Priority = 1;
                 _input.vcam3 = false;
             }
             else if (_input.vcam4)
@@ -285,6 +428,7 @@ namespace StarterAssets
                 _vcamOverTheShoulder.Priority = 0;
                 _vcamLowAngle.Priority = 1;
                 _vcamIsometric.Priority = 0;
+                _vcamMigratingIsometric.Priority = 0;
                 _input.vcam4 = false;
             }
         }

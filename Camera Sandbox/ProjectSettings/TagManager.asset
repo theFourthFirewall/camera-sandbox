@@ -8,6 +8,7 @@ TagManager:
   - PlayerFollowCamera
   - Vcam
   - Environment
+  - IsometricRotation
   layers:
   - Default
   - TransparentFX
