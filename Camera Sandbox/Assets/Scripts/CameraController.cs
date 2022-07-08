@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
 using UnityEngine.InputSystem;
+using Cinemachine;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -12,7 +13,7 @@ namespace StarterAssets
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
     [RequireComponent(typeof(PlayerInput))]
 #endif
-    public class OverTheShoulderController : MonoBehaviour
+    public class CameraController : MonoBehaviour
     {
         [Header("Player")]
         [Tooltip("Move speed of the character in m/s")]
@@ -79,6 +80,7 @@ namespace StarterAssets
         private float _cinemachineTargetYaw;
         private float _cinemachineTargetPitch;
 
+
         // player
         private float _speed;
         private float _animationBlend;
@@ -105,6 +107,10 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private GameObject[] _virtualCameras;
+        private ICinemachineCamera _vcamOverTheShoulder;
+        private ICinemachineCamera _vcamLowAngle;
+        private ICinemachineCamera _vcamIsometric;
 
         private const float _threshold = 0.01f;
 
@@ -129,13 +135,36 @@ namespace StarterAssets
             if (_mainCamera == null)
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+
+                _virtualCameras = GameObject.FindGameObjectsWithTag("Vcam");
+                foreach (GameObject Vcam in _virtualCameras)
+                {
+                    switch (Vcam.name)
+                    {
+                        case "OverTheShoulder":
+                        {
+                            _vcamOverTheShoulder = Vcam.GetComponent<ICinemachineCamera>();
+                            break;
+                        }
+                        case "LowAngle":
+                        {
+                            _vcamLowAngle = Vcam.GetComponent<ICinemachineCamera>();
+                            break;
+                        }
+                        case "Isometric":
+                        {
+                            _vcamIsometric = Vcam.GetComponent<ICinemachineCamera>();
+                            break;
+                        }
+                    }
+                }
             }
         }
 
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
@@ -164,6 +193,7 @@ namespace StarterAssets
         private void LateUpdate()
         {
             CameraRotation();
+            CameraSelection();
         }
 
         private void AssignAnimationIDs()
@@ -192,23 +222,71 @@ namespace StarterAssets
 
         private void CameraRotation()
         {
-            // if there is an input and camera position is not fixed
-            if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+            //If the main camera is in 3rd person perspective mode, offer full rotations
+            if (!Camera.main.orthographic)
             {
-                //Don't multiply mouse input by Time.deltaTime;
-                float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+                // if there is an input and camera position is not fixed
+                if (_input.look.sqrMagnitude >= _threshold && !LockCameraPosition)
+                {
+                    //Don't multiply mouse input by Time.deltaTime;
+                    float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-                _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
-                _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                    _cinemachineTargetYaw += _input.look.x * deltaTimeMultiplier;
+                    _cinemachineTargetPitch += _input.look.y * deltaTimeMultiplier;
+                }
+
+                // clamp our rotations so our values are limited 360 degrees
+                _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+                // If we are currently looking at over the shoulder, take pitch into account
+                if (CinemachineCore.Instance.IsLive(_vcamOverTheShoulder))
+                {
+                    _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+                }
+                else
+                {
+                    _cinemachineTargetPitch = 0.0f;
+                }
+
+                // Cinemachine will follow this target
+                CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
+                    _cinemachineTargetYaw, 0.0f);
             }
+        }
 
-            // clamp our rotations so our values are limited 360 degrees
-            _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
-
-            // Cinemachine will follow this target
-            CinemachineCameraTarget.transform.rotation = Quaternion.Euler(_cinemachineTargetPitch + CameraAngleOverride,
-                _cinemachineTargetYaw, 0.0f);
+        private void CameraSelection()
+        {
+            if (_input.vcam1)
+            {
+                Debug.Log("Vcam1 Selected");
+                Camera.main.orthographic = false;
+                _vcamOverTheShoulder.Priority = 1;
+                _vcamLowAngle.Priority = 0;
+                _vcamIsometric.Priority = 0;
+                _input.vcam1 = false;
+            }
+            else if (_input.vcam2)
+            {
+                Debug.Log("Vcam2 Selected");
+                Camera.main.orthographic = true;
+                _vcamOverTheShoulder.Priority = 0;
+                _vcamLowAngle.Priority = 0;
+                _vcamIsometric.Priority = 1;
+                _input.vcam2 = false;
+            }
+            else if (_input.vcam3)
+            {
+                Debug.Log("Vcam3 Selected");
+                _input.vcam3 = false;
+            }
+            else if (_input.vcam4)
+            {
+                Debug.Log("Vcam4 Selected");
+                Camera.main.orthographic = false;
+                _vcamOverTheShoulder.Priority = 0;
+                _vcamLowAngle.Priority = 1;
+                _vcamIsometric.Priority = 0;
+                _input.vcam4 = false;
+            }
         }
 
         private void Move()
@@ -266,10 +344,6 @@ namespace StarterAssets
 
 
             Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
-            // Debug.Log("Target Direction: " + targetDirection);
-            // Debug.Log("Vector3.forward: " + Vector3.forward);            
-            // Debug.Log("transform.rotation: " + GetComponent<Transform>().transform.rotation);
-            Debug.Log("transform.forward: " + GetComponent<Transform>().transform.forward);
 
             // move the player
             _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +

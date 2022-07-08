@@ -14,6 +14,10 @@ namespace StarterAssets
 		public bool sprint;
 		public bool rotateCameraRight;
 		public bool rotateCameraLeft;
+		public bool vcam1;
+		public bool vcam2;
+		public bool vcam3;
+		public bool vcam4;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -53,6 +57,22 @@ namespace StarterAssets
 		{
 			RotateCameraLeftInput(value.isPressed);
 		}
+		public void OnVcam1(InputValue value)
+		{
+			Vcam1Input(value.isPressed);
+		}
+		public void OnVcam2(InputValue value)
+		{
+			Vcam2Input(value.isPressed);
+		}
+		public void OnVcam3(InputValue value)
+		{
+			Vcam3Input(value.isPressed);
+		}
+		public void OnVcam4(InputValue value)
+		{
+			Vcam4Input(value.isPressed);
+		}
 #endif
 
 
@@ -82,6 +102,22 @@ namespace StarterAssets
 		public void RotateCameraLeftInput(bool newRotateCameraLeftState)
 		{
 			rotateCameraLeft = newRotateCameraLeftState;
+		}
+		public void Vcam1Input(bool newVcam1State)
+		{
+			vcam1 = newVcam1State;
+		}
+		public void Vcam2Input(bool newVcam2State)
+		{
+			vcam2 = newVcam2State;
+		}
+		public void Vcam3Input(bool newVcam3State)
+		{
+			vcam3 = newVcam3State;
+		}
+		public void Vcam4Input(bool newVcam4State)
+		{
+			vcam4 = newVcam4State;
 		}
 
 		private void OnApplicationFocus(bool hasFocus)
