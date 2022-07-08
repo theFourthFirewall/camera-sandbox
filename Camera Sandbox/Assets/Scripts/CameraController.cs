@@ -123,6 +123,7 @@ namespace StarterAssets
         private ICinemachineCamera _vcamMigratingIsometric;
         private CinemachineFramingTransposer _vcamMigratingIsometricFrame;
         private GameObject _isoRotation;
+        private HUDUpdater _hud;
 
         private const float _threshold = 0.01f;
 
@@ -149,6 +150,8 @@ namespace StarterAssets
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 
                 _isoRotation = GameObject.FindGameObjectWithTag("IsometricRotation");
+
+                _hud = FindObjectOfType<HUDUpdater>();
 
                 _virtualCameras = GameObject.FindGameObjectsWithTag("Vcam");
                 foreach (GameObject Vcam in _virtualCameras)
@@ -188,6 +191,7 @@ namespace StarterAssets
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
+            _input.vcam1 = true;
             _playerTransform = GetComponent<Transform>();
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
@@ -400,6 +404,10 @@ namespace StarterAssets
                 _vcamIsometric.Priority = 0;
                 _vcamMigratingIsometric.Priority = 0;
                 _input.vcam1 = false;
+                Cursor.visible = false;
+                _input.cursorLocked = true;
+                _input.cursorInputForLook = true;
+                _hud.UpdateHUD("OverTheShoulder");
             }
             else if (_input.vcam2)
             {
@@ -410,6 +418,10 @@ namespace StarterAssets
                 _vcamIsometric.Priority = 1;
                 _vcamMigratingIsometric.Priority = 0;
                 _input.vcam2 = false;
+                Cursor.visible = true;
+                _input.cursorLocked = false;
+                _input.cursorInputForLook = false;
+                _hud.UpdateHUD("Isometric");
             }
             else if (_input.vcam3)
             {
@@ -420,6 +432,10 @@ namespace StarterAssets
                 _vcamIsometric.Priority = 0;
                 _vcamMigratingIsometric.Priority = 1;
                 _input.vcam3 = false;
+                Cursor.visible = true;
+                _input.cursorLocked = false;
+                _input.cursorInputForLook = false;
+                _hud.UpdateHUD("MigratingIsometric");
             }
             else if (_input.vcam4)
             {
@@ -430,6 +446,10 @@ namespace StarterAssets
                 _vcamIsometric.Priority = 0;
                 _vcamMigratingIsometric.Priority = 0;
                 _input.vcam4 = false;
+                Cursor.visible = false;
+                _input.cursorLocked = true;
+                _input.cursorInputForLook = true;
+                _hud.UpdateHUD("LowAngle");
             }
         }
 

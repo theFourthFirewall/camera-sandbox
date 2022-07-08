@@ -286,11 +286,33 @@
                 },
                 {
                     "name": "",
+                    "id": "c73d9da5-a65a-43d0-97c7-dee98f4ae97e",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
+                    "action": "RotateCameraRight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "14db1f08-9c84-4721-b262-e78ab47f6cbb",
                     "path": "<Gamepad>/rightStick/left",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
+                    "action": "RotateCameraLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eb555fc9-4852-4f32-8458-3b140872bab2",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KeyboardMouse",
                     "action": "RotateCameraLeft",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -331,7 +353,7 @@
                 {
                     "name": "",
                     "id": "408cca68-797a-4424-9b83-670ecee48093",
-                    "path": "<Keyboard>/2",
+                    "path": "<Keyboard>/3",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
@@ -353,7 +375,7 @@
                 {
                     "name": "",
                     "id": "816fae2e-d3fc-4ab2-a897-f126b86af101",
-                    "path": "<Keyboard>/3",
+                    "path": "<Keyboard>/4",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
@@ -375,7 +397,7 @@
                 {
                     "name": "",
                     "id": "d78117c6-903c-4b8c-ab30-53066fb8cb90",
-                    "path": "<Keyboard>/4",
+                    "path": "<Keyboard>/2",
                     "interactions": "",
                     "processors": "",
                     "groups": "KeyboardMouse",
