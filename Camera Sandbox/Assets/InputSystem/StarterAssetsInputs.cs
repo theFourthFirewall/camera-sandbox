@@ -18,6 +18,7 @@ namespace StarterAssets
 		public bool vcam2;
 		public bool vcam3;
 		public bool vcam4;
+		public bool quit;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -73,6 +74,10 @@ namespace StarterAssets
 		{
 			Vcam4Input(value.isPressed);
 		}
+		public void OnQuit(InputValue value)
+		{
+			QuitInput(value.isPressed);
+		}
 #endif
 
 
@@ -118,6 +123,10 @@ namespace StarterAssets
 		public void Vcam4Input(bool newVcam4State)
 		{
 			vcam4 = newVcam4State;
+		}
+		public void QuitInput(bool newQuitState)
+		{
+			quit = newQuitState;
 		}
 
 		private void OnApplicationFocus(bool hasFocus)

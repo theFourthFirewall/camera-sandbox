@@ -213,6 +213,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            Quit();
         }
 
         private void LateUpdate()
@@ -328,9 +329,6 @@ namespace StarterAssets
             float newY;
             oldX = _vcamMigratingIsometricFrame.m_ScreenX;
             oldY = _vcamMigratingIsometricFrame.m_ScreenY;
-            Debug.Log("player x: " + _playerTransform.transform.forward.x);
-            Debug.Log("IsoRotation x: " + _isoRotation.transform.forward.x);
-            Debug.Log("IsoRotation Y: " + (int)_isoRotation.transform.eulerAngles.y);
             switch ((int)_isoRotation.transform.eulerAngles.y)
             {
                 case 0:
@@ -355,7 +353,6 @@ namespace StarterAssets
                 }
             }
             Vector3 isometricForward = isometricOffset * _playerTransform.forward;
-            Debug.Log("Calculated Forward: " + isometricForward);
 
             // Determine the new X position
             if (isometricForward.x > 0)
@@ -628,6 +625,15 @@ namespace StarterAssets
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+            }
+        }
+
+        private void Quit()
+        {
+            if (_input.quit)
+            {
+                Debug.Log("Quitting App");
+                Application.Quit();
             }
         }
     }

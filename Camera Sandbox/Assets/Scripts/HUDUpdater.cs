@@ -42,7 +42,8 @@ public class HUDUpdater : MonoBehaviour
                                              "\nRight Stick / Mouse: Look (Up/Down/Left/Right)"+
                                             "\nLeft Trigger / Shift: Run" +
                                             "\nA / Space: Jump" +
-                                            "\nD-Pad / 1,2,3,4: Camera Select";
+                                            "\nD-Pad / 1,2,3,4: Camera Select" +
+                                            "\nEscape: Quit";
                             break;
                         }
                         case "LowAngle":
@@ -52,7 +53,8 @@ public class HUDUpdater : MonoBehaviour
                                             "\nRight Stick / Mouse: Look (Left/Right)"+
                                             "\nLeft Trigger / Shift: Run" +
                                             "\nA / Space: Jump" +
-                                            "\nD-Pad / 1,2,3,4: Camera Select";
+                                            "\nD-Pad / 1,2,3,4: Camera Select" +
+                                            "\nEscape: Quit";
                             break;
                         }
                         case "Isometric":
@@ -62,7 +64,8 @@ public class HUDUpdater : MonoBehaviour
                                             "\nRight Stick / Q / E: Quarter Rotate (Left/Right)"+
                                             "\nLeft Trigger / Shift: Run" +
                                             "\nA / Space: Jump" +
-                                            "\nD-Pad / 1,2,3,4: Camera Select";
+                                            "\nD-Pad / 1,2,3,4: Camera Select" +
+                                            "\nEscape: Quit";
                             break;
                         }
                         case "MigratingIsometric":
@@ -72,7 +75,8 @@ public class HUDUpdater : MonoBehaviour
                                             "\nRight Stick / Q / E: Quarter Rotate (Left/Right)" +
                                             "\nLeft Trigger / Shift: Run" +
                                             "\nA / Space: Jump" +
-                                            "\nD-Pad / 1,2,3,4: Camera Select";
+                                            "\nD-Pad / 1,2,3,4: Camera Select" +
+                                            "\nEscape: Quit";
                             break;
                         }
                     }
