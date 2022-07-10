@@ -1133,7 +1133,7 @@ GameObject:
   - component: {fileID: 7719510745431303799}
   m_Layer: 0
   m_Name: Spot Light
-  m_TagString: Untagged
+  m_TagString: Flashlight
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1357,6 +1357,12 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+  _cameraSmoothing: 1
+  _cameraRotationSpeed: 2
+  _minXFrame: 0.1
+  _maxXFrame: 0.9
+  _minYFrame: 0.75
+  _maxYFrame: 0.25
 --- !u!114 &5885216827943657505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1392,6 +1398,11 @@ MonoBehaviour:
   sprint: 0
   rotateCameraRight: 0
   rotateCameraLeft: 0
+  vcam1: 0
+  vcam2: 0
+  vcam3: 0
+  vcam4: 0
+  quit: 0
   analogMovement: 0
   cursorLocked: 1
   cursorInputForLook: 1

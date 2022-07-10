@@ -9,6 +9,7 @@ TagManager:
   - Vcam
   - Environment
   - IsometricRotation
+  - Flashlight
   layers:
   - Default
   - TransparentFX

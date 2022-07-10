@@ -124,6 +124,7 @@ namespace StarterAssets
         private CinemachineFramingTransposer _vcamMigratingIsometricFrame;
         private GameObject _isoRotation;
         private HUDUpdater _hud;
+        private GameObject _flashlight;
 
         private const float _threshold = 0.01f;
 
@@ -150,6 +151,8 @@ namespace StarterAssets
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 
                 _isoRotation = GameObject.FindGameObjectWithTag("IsometricRotation");
+
+                _flashlight = GameObject.FindGameObjectWithTag("Flashlight");
 
                 _hud = FindObjectOfType<HUDUpdater>();
 
@@ -193,6 +196,7 @@ namespace StarterAssets
             _input = GetComponent<StarterAssetsInputs>();
             _input.vcam1 = true;
             _playerTransform = GetComponent<Transform>();
+            _flashlight.SetActive(true);
 #if ENABLE_INPUT_SYSTEM && STARTER_ASSETS_PACKAGES_CHECKED
             _playerInput = GetComponent<PlayerInput>();
 #else
@@ -213,6 +217,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            ToggleFlashlight();
             Quit();
         }
 
@@ -584,6 +589,22 @@ namespace StarterAssets
             if (_verticalVelocity < _terminalVelocity)
             {
                 _verticalVelocity += Gravity * Time.deltaTime;
+            }
+        }
+
+        private void ToggleFlashlight()
+        {
+            if (_input.flashlight)
+            {
+                if (_flashlight.activeInHierarchy)
+                {
+                    _flashlight.SetActive(false);
+                }
+                else
+                {
+                    _flashlight.SetActive(true);
+                }
+                _input.flashlight = false;
             }
         }
 

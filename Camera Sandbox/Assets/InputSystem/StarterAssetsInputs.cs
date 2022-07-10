@@ -12,6 +12,7 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+		public bool flashlight;
 		public bool rotateCameraRight;
 		public bool rotateCameraLeft;
 		public bool vcam1;
@@ -50,22 +51,31 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+		public void OnFlashlight(InputValue value)
+		{
+			FlashlightInput(value.isPressed);
+		}
+
 		public void OnRotateCameraRight(InputValue value)
 		{
 			RotateCameraRightInput(value.isPressed);
 		}
+
 		public void OnRotateCameraLeft(InputValue value)
 		{
 			RotateCameraLeftInput(value.isPressed);
 		}
+
 		public void OnVcam1(InputValue value)
 		{
 			Vcam1Input(value.isPressed);
 		}
+
 		public void OnVcam2(InputValue value)
 		{
 			Vcam2Input(value.isPressed);
 		}
+
 		public void OnVcam3(InputValue value)
 		{
 			Vcam3Input(value.isPressed);
@@ -74,10 +84,12 @@ namespace StarterAssets
 		{
 			Vcam4Input(value.isPressed);
 		}
+
 		public void OnQuit(InputValue value)
 		{
 			QuitInput(value.isPressed);
 		}
+
 #endif
 
 
@@ -100,30 +112,42 @@ namespace StarterAssets
 		{
 			sprint = newSprintState;
 		}
+
+		public void FlashlightInput(bool newFlashlightState)
+		{
+			flashlight = newFlashlightState;
+		}
+
 		public void RotateCameraRightInput(bool newRotateCameraRightState)
 		{
 			rotateCameraRight = newRotateCameraRightState;
 		}
+
 		public void RotateCameraLeftInput(bool newRotateCameraLeftState)
 		{
 			rotateCameraLeft = newRotateCameraLeftState;
 		}
+
 		public void Vcam1Input(bool newVcam1State)
 		{
 			vcam1 = newVcam1State;
 		}
+
 		public void Vcam2Input(bool newVcam2State)
 		{
 			vcam2 = newVcam2State;
 		}
+
 		public void Vcam3Input(bool newVcam3State)
 		{
 			vcam3 = newVcam3State;
 		}
+
 		public void Vcam4Input(bool newVcam4State)
 		{
 			vcam4 = newVcam4State;
 		}
+
 		public void QuitInput(bool newQuitState)
 		{
 			quit = newQuitState;
