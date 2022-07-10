@@ -41,7 +41,8 @@ public class HUDUpdater : MonoBehaviour
                             controls.text = "Left Stick / WASD: Move" +
                                              "\nRight Stick / Mouse: Look (Up/Down/Left/Right)"+
                                             "\nLeft Trigger / Shift: Run" +
-                                            "\nA / Space: Jump" +
+                                            "\nA Button / Space: Jump" +
+                                            "\nY Button / F: Flashlight" +
                                             "\nD-Pad / 1,2,3,4: Camera Select" +
                                             "\nEscape: Quit";
                             break;
@@ -52,7 +53,8 @@ public class HUDUpdater : MonoBehaviour
                             controls.text = "Left Stick / WASD: Move" +
                                             "\nRight Stick / Mouse: Look (Left/Right)"+
                                             "\nLeft Trigger / Shift: Run" +
-                                            "\nA / Space: Jump" +
+                                            "\nA Button / Space: Jump" +
+                                            "\nY Button / F: Flashlight" +
                                             "\nD-Pad / 1,2,3,4: Camera Select" +
                                             "\nEscape: Quit";
                             break;
@@ -63,7 +65,8 @@ public class HUDUpdater : MonoBehaviour
                             controls.text = "Left Stick / WASD: Move" +
                                             "\nRight Stick / Q / E: Quarter Rotate (Left/Right)"+
                                             "\nLeft Trigger / Shift: Run" +
-                                            "\nA / Space: Jump" +
+                                            "\nA Button / Space: Jump" +
+                                            "\nY Button / F: Flashlight" +
                                             "\nD-Pad / 1,2,3,4: Camera Select" +
                                             "\nEscape: Quit";
                             break;
@@ -74,7 +77,8 @@ public class HUDUpdater : MonoBehaviour
                             controls.text = "Left Stick / WASD: Move" +
                                             "\nRight Stick / Q / E: Quarter Rotate (Left/Right)" +
                                             "\nLeft Trigger / Shift: Run" +
-                                            "\nA / Space: Jump" +
+                                            "\nA Button / Space: Jump" +
+                                            "\nY Button / F: Flashlight" +
                                             "\nD-Pad / 1,2,3,4: Camera Select" +
                                             "\nEscape: Quit";
                             break;
